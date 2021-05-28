@@ -27,7 +27,10 @@ func UserIndex(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.JSON(r)
+	return c.JSON(fiber.Map{
+		"status": true,
+		"data":   r,
+	})
 }
 
 // UserCreate ...
@@ -39,14 +42,15 @@ func UserCreate(c *fiber.Ctx) error {
 	r, err := repo.Create(params)
 
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{
+		return c.Status(500).JSON(fiber.Map{
 			"status":  false,
 			"message": err.Error(),
 		})
 	}
 
 	return c.JSON(fiber.Map{
-		"data": r,
+		"status": true,
+		"data":   r,
 	})
 
 }
@@ -58,14 +62,15 @@ func UserShow(c *fiber.Ctx) error {
 	r, err := repo.FindByID(id)
 
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{
+		return c.Status(500).JSON(fiber.Map{
 			"status":  false,
 			"message": err.Error(),
 		})
 	}
 
 	return c.JSON(fiber.Map{
-		"data": r,
+		"status": true,
+		"data":   r,
 	})
 }
 
@@ -78,14 +83,15 @@ func UserUpdate(c *fiber.Ctx) error {
 	r, err := repo.Update(id, params)
 
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{
+		return c.Status(500).JSON(fiber.Map{
 			"status":  false,
 			"message": err.Error(),
 		})
 	}
 
 	return c.JSON(fiber.Map{
-		"data": r,
+		"status": true,
+		"data":   r,
 	})
 }
 
@@ -97,7 +103,7 @@ func UserDelete(c *fiber.Ctx) error {
 	_, err := repo.Delete(id)
 
 	if err != nil {
-		return c.Status(400).JSON(fiber.Map{
+		return c.Status(500).JSON(fiber.Map{
 			"status":  false,
 			"message": err.Error(),
 		})

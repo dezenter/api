@@ -28,7 +28,7 @@ type UserPaginate struct {
 	PerPage  int   `json:"perPage"`
 	Page     int   `json:"page"`
 	LastPage int   `json:"lastPage"`
-	Data     []*User
+	Users    []*User
 }
 
 // UserCreateInput create user
