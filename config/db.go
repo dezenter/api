@@ -28,6 +28,7 @@ func InitDB() {
 	envApp := os.Getenv("APP_ENV")
 	if envApp == "dev" {
 		db.AutoMigrate(&model.User{})
+		db.AutoMigrate(&model.PostCategory{})
 		// db.AutoMigrate(&model.Auth{})
 		// db.AutoMigrate(&model.ResetPassword{})
 		// db.AutoMigrate(&model.Event{})
