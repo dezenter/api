@@ -4,14 +4,14 @@ import (
 	"os"
 	"time"
 
-	"github.com/dezenter/api/model"
-	"github.com/dezenter/api/util"
+	"github.com/dezenter/api/models"
+	"github.com/dezenter/api/utils"
 	"github.com/dgrijalva/jwt-go"
 )
 
 // CreateUserToken ...
-func CreateUserToken(u *model.User) (*model.UserToken, error) {
-	exp := time.Now().Add(time.Hour * util.AccessTokenExpire).Unix()
+func CreateUserToken(u *models.User) (*models.UserToken, error) {
+	exp := time.Now().Add(time.Hour * utils.AccessTokenExpire).Unix()
 
 	s := os.Getenv("JWT_SECRET")
 	ac := jwt.MapClaims{
@@ -26,12 +26,12 @@ func CreateUserToken(u *model.User) (*model.UserToken, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &model.UserToken{Token: gt, User: *u}, nil
+	return &models.UserToken{Token: gt, User: *u}, nil
 }
 
 // CreateAdminToken ...
-// func CreateAdminToken(u *model.Admin) (*model.AdminToken, error) {
-// 	exp := time.Now().Add(time.Hour * util.AccessTokenExpire).Unix()
+// func CreateAdminToken(u *models.Admin) (*models.AdminToken, error) {
+// 	exp := time.Now().Add(time.Hour * utils.AccessTokenExpire).Unix()
 
 // 	s := os.Getenv("JWT_SECRET")
 // 	ac := jwt.MapClaims{
@@ -46,5 +46,5 @@ func CreateUserToken(u *model.User) (*model.UserToken, error) {
 // 	if err != nil {
 // 		return nil, err
 // 	}
-// 	return &model.AdminToken{Token: gt, Admin: *u}, nil
+// 	return &models.AdminToken{Token: gt, Admin: *u}, nil
 // }

@@ -1,4 +1,4 @@
-package model
+package models
 
 type PostCategory struct {
 	ID           string `gorm:"primaryKey" json:"id"`

@@ -1,10 +1,10 @@
-package config
+package configs
 
 import (
 	"fmt"
 	"os"
 
-	"github.com/dezenter/api/model"
+	"github.com/dezenter/api/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -27,11 +27,11 @@ func InitDB() {
 	}
 	envApp := os.Getenv("APP_ENV")
 	if envApp == "dev" {
-		db.AutoMigrate(&model.User{})
-		db.AutoMigrate(&model.PostCategory{})
-		// db.AutoMigrate(&model.Auth{})
-		// db.AutoMigrate(&model.ResetPassword{})
-		// db.AutoMigrate(&model.Event{})
+		db.AutoMigrate(&models.User{})
+		db.AutoMigrate(&models.PostCategory{})
+		// db.AutoMigrate(&models.Auth{})
+		// db.AutoMigrate(&models.ResetPassword{})
+		// db.AutoMigrate(&models.Event{})
 	}
 
 	DB = db
