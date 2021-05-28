@@ -7,7 +7,7 @@ run:
 build:
 	go build main.go
 
-ccache:
+clean-cache:
 	go clean -modcache
 
 update:

@@ -3,9 +3,9 @@ package v1
 import (
 	"strconv"
 
-	"github.com/dezenter/api/model"
-	"github.com/dezenter/api/repository"
-	"github.com/dezenter/api/util"
+	"github.com/dezenter/api/models"
+	"github.com/dezenter/api/repositories"
+	"github.com/dezenter/api/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -17,7 +17,7 @@ func PostCategoryIndex(c *fiber.Ctx) error {
 		currentPage, _ = strconv.Atoi(getCurrentPage)
 	}
 	limit := 15
-	repo := repository.NewPostCategoryRepository()
+	repo := repositories.NewPostCategoryRepository()
 	r, err := repo.Paginate(currentPage, limit)
 
 	if err != nil {
@@ -35,11 +35,11 @@ func PostCategoryIndex(c *fiber.Ctx) error {
 
 // PostCategoryCreate
 func PostCategoryCreate(c *fiber.Ctx) error {
-	params := model.PostCategoryInput{}
+	params := models.PostCategoryInput{}
 
 	c.BodyParser(&params)
 
-	repo := repository.NewPostCategoryRepository()
+	repo := repositories.NewPostCategoryRepository()
 	r, err := repo.Create(params)
 
 	if err != nil {
@@ -58,7 +58,7 @@ func PostCategoryCreate(c *fiber.Ctx) error {
 func PostCategoryShow(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	repo := repository.NewPostCategoryRepository()
+	repo := repositories.NewPostCategoryRepository()
 	r, err := repo.FindById(id)
 
 	if err != nil {
@@ -78,11 +78,11 @@ func PostCategoryShow(c *fiber.Ctx) error {
 func PostCategoryUpdate(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	params := model.PostCategoryInput{}
+	params := models.PostCategoryInput{}
 
 	c.BodyParser(&params)
 
-	repo := repository.NewPostCategoryRepository()
+	repo := repositories.NewPostCategoryRepository()
 	r, err := repo.Update(id, params)
 
 	if err != nil {
@@ -102,7 +102,7 @@ func PostCategoryUpdate(c *fiber.Ctx) error {
 func PostCategoryDelete(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	repo := repository.NewPostCategoryRepository()
+	repo := repositories.NewPostCategoryRepository()
 	_, err := repo.Delete(id)
 
 	if err != nil {
@@ -114,6 +114,6 @@ func PostCategoryDelete(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"status":  true,
-		"message": util.MsgSuccessDelete,
+		"message": utils.MsgSuccessDelete,
 	})
 }
