@@ -40,7 +40,7 @@ func (u *UserRepository) Paginate(page int, limit int) (*model.UserPaginate, err
 		PerPage:  limit,
 		Page:     page,
 		LastPage: lastPage,
-		Data:     users,
+		Users:    users,
 	}
 	return &p, nil
 }
