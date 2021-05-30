@@ -2,44 +2,53 @@ package middlewares
 
 import (
 	"fmt"
+	"os"
 
-	"github.com/dgrijalva/jwt-go"
-	"github.com/gofiber/fiber"
+	"github.com/dezenter/api/models"
+	"github.com/form3tech-oss/jwt-go"
+	"github.com/gofiber/fiber/v2"
+	jwtware "github.com/gofiber/jwt/v2"
 )
 
-var userCtxKey = &contextKey{"user"}
+// Protected protect routes
+func Auth() fiber.Handler {
+	s := os.Getenv("JWT_SECRET")
 
-type contextKey struct {
-	user string
+	return jwtware.New(jwtware.Config{
+		SigningKey:   []byte(s),
+		ErrorHandler: jwtError,
+	})
 }
 
-// UserCustomClaims ...
-type UserCustomClaims struct {
-	UserID    string `json:"userId"`
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	Role      string `json:"role"`
-	jwt.StandardClaims
+func jwtError(c *fiber.Ctx, err error) error {
+	if err.Error() == "Missing or malformed JWT" {
+		return c.Status(fiber.StatusBadRequest).
+			JSON(fiber.Map{
+				"status":  "error",
+				"message": "Missing or malformed JWT",
+				"data":    nil,
+			})
+	}
+	return c.Status(fiber.StatusUnauthorized).
+		JSON(fiber.Map{
+			"status":  "error",
+			"message": "Invalid or expired JWT",
+			"data":    nil,
+		})
 }
 
-func Auth() func(c *fiber.Ctx) error {
-	fmt.Println()
-	return nil
-	// return c.Next()
-	// scr := os.Getenv("JWT_SECRET")
+func UserForContext(c *fiber.Ctx) (*models.UserAuth, error) {
+	user := c.Locals("user").(*jwt.Token)
+	if !user.Valid {
+		return nil, fmt.Errorf("error")
+	}
 
-	// token, err := jwt.ParseWithClaims(ac[7:], &UserCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
-	// 	return []byte(scr), nil
-	// })
-
-	// if err != nil {
-	// 	http.Error(w, `{"message": "`+err.Error()+`"}`, http.StatusUnauthorized)
-	// 	return
-	// }
-
-	// claims, ok := token.Claims.(*UserCustomClaims)
-	// if !ok && !token.Valid {
-	// 	http.Error(w, `{"message": "`+err.Error()+`"}`, http.StatusUnauthorized)
-	// 	return
-	// }
+	u := user.Claims.(jwt.MapClaims)
+	getUser := models.UserAuth{
+		UserId:    u["userId"].(string),
+		FirstName: u["firstName"].(string),
+		LastName:  u["lastName"].(string),
+		Role:      u["role"].(string),
+	}
+	return &getUser, nil
 }

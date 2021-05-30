@@ -21,7 +21,7 @@ func PostCategoryIndex(c *fiber.Ctx) error {
 	r, err := repo.Paginate(currentPage, limit)
 
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  false,
 			"message": err.Error(),
 		})
@@ -43,7 +43,7 @@ func PostCategoryCreate(c *fiber.Ctx) error {
 	r, err := repo.Create(params)
 
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  false,
 			"message": err.Error(),
 		})
@@ -62,7 +62,7 @@ func PostCategoryShow(c *fiber.Ctx) error {
 	r, err := repo.FindById(id)
 
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  false,
 			"message": err.Error(),
 		})
@@ -86,7 +86,7 @@ func PostCategoryUpdate(c *fiber.Ctx) error {
 	r, err := repo.Update(id, params)
 
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  false,
 			"message": err.Error(),
 		})
@@ -106,7 +106,7 @@ func PostCategoryDelete(c *fiber.Ctx) error {
 	_, err := repo.Delete(id)
 
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  false,
 			"message": err.Error(),
 		})

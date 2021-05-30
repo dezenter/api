@@ -15,7 +15,7 @@ func AuthLogin(c *fiber.Ctx) error {
 	r, err := repo.Login(params)
 
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  false,
 			"message": err.Error(),
 		})

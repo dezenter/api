@@ -6,7 +6,7 @@ import (
 
 	"github.com/dezenter/api/models"
 	"github.com/dezenter/api/utils"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/form3tech-oss/jwt-go"
 )
 
 // CreateUserToken ...
