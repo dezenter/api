@@ -1,9 +1,9 @@
 package v1
 
 import (
-	"fmt"
 	"strconv"
 
+	"github.com/dezenter/api/middlewares"
 	"github.com/dezenter/api/models"
 	"github.com/dezenter/api/repositories"
 	"github.com/dezenter/api/utils"
@@ -22,7 +22,7 @@ func UserIndex(c *fiber.Ctx) error {
 	r, err := repo.Paginate(currentPage, limit)
 
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  false,
 			"message": err.Error(),
 		})
@@ -43,7 +43,7 @@ func UserCreate(c *fiber.Ctx) error {
 	r, err := repo.Create(params)
 
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  false,
 			"message": err.Error(),
 		})
@@ -62,7 +62,7 @@ func UserShow(c *fiber.Ctx) error {
 	r, err := repo.FindByID(id)
 
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  false,
 			"message": err.Error(),
 		})
@@ -83,7 +83,7 @@ func UserUpdate(c *fiber.Ctx) error {
 	r, err := repo.Update(id, params)
 
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  false,
 			"message": err.Error(),
 		})
@@ -103,7 +103,7 @@ func UserDelete(c *fiber.Ctx) error {
 	_, err := repo.Delete(id)
 
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  false,
 			"message": err.Error(),
 		})
@@ -117,6 +117,26 @@ func UserDelete(c *fiber.Ctx) error {
 
 // UserMe
 func UserMe(c *fiber.Ctx) error {
-	fmt.Println(c)
-	return nil
+	a, err := middlewares.UserForContext(c)
+	if err != nil {
+		return c.JSON(fiber.Map{
+			"status":  false,
+			"message": "error",
+		})
+	}
+
+	repo := repositories.NewUserRepository()
+	u, err := repo.FindByID(a.UserId)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"status":  false,
+			"message": err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status": true,
+		"data":   u,
+	})
 }

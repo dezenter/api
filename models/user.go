@@ -75,3 +75,10 @@ type UserToken struct {
 	Token string `json:"token"`
 	User  User   `json:"user"`
 }
+
+type UserAuth struct {
+	UserId    string `json:"userId"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	Role      string `json:"role"`
+}

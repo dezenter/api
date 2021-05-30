@@ -18,12 +18,13 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 	config.InitDB()
-	router.Router(app)
 
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
 		AllowHeaders: "Origin, Content-Type, Accept",
 	}))
+
+	router.Router(app)
 
 	log.Fatal(app.Listen(":8080"))
 }

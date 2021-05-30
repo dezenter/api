@@ -2,6 +2,7 @@ package router
 
 import (
 	c "github.com/dezenter/api/handlers/v1"
+	"github.com/dezenter/api/middlewares"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -16,7 +17,7 @@ func Router(app *fiber.App) {
 	v1.Patch("/users/:id", c.UserUpdate)
 	v1.Delete("/users/:id", c.UserDelete)
 
-	v1.Get("/me", c.UserMe)
+	v1.Get("/me", middlewares.Auth(), c.UserMe)
 
 	// V1 Auth
 	v1.Post("/auth", c.AuthLogin)
