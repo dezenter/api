@@ -48,7 +48,7 @@ func PostCreate(c *fiber.Ctx) error {
 	params := models.PostCreateInput{}
 	c.BodyParser(&params)
 
-	errors := validators.CreatePostStruct(params)
+	errors := validators.CreatePost(params)
 	if errors != nil {
 		return c.JSON(fiber.Map{
 			"status":  false,
