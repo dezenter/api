@@ -10,3 +10,9 @@ const AccessTokenExpire time.Duration = 1
 
 // MsgSuccessDelete
 const MsgSuccessDelete string = "Successful deleted"
+
+type ErrorResponse struct {
+	FailedField string
+	Tag         string
+	Value       string
+}
