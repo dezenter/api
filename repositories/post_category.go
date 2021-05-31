@@ -1,11 +1,11 @@
-package repository
+package repositories
 
 import (
 	"math"
 
-	"github.com/dezenter/api/config"
-	"github.com/dezenter/api/model"
-	"github.com/dezenter/api/util"
+	"github.com/dezenter/api/configs"
+	"github.com/dezenter/api/models"
+	"github.com/dezenter/api/utils"
 	"gorm.io/gorm"
 )
 
@@ -16,12 +16,12 @@ type PostCategoryRepository struct {
 
 // NewUserRepository ...
 func NewPostCategoryRepository() *PostCategoryRepository {
-	return &PostCategoryRepository{db: config.DB}
+	return &PostCategoryRepository{db: configs.DB}
 }
 
 // Paginate post category
-func (u *PostCategoryRepository) Paginate(page int, limit int) (*model.PostCategoryPaginate, error) {
-	var c []*model.PostCategory
+func (u *PostCategoryRepository) Paginate(page int, limit int) (*models.PostCategoryPaginate, error) {
+	var c []*models.PostCategory
 	var count int64
 
 	var skip int
@@ -30,11 +30,11 @@ func (u *PostCategoryRepository) Paginate(page int, limit int) (*model.PostCateg
 	} else {
 		skip = limit * (page - 1)
 	}
-	u.db.Model(&model.PostCategory{}).Count(&count)
+	u.db.Model(&models.PostCategory{}).Count(&count)
 	u.db.Limit(limit).Offset(skip).Order("created_at desc").Find(&c)
 
 	lastPage := int(math.Ceil(float64(count) / float64(limit)))
-	p := model.PostCategoryPaginate{
+	p := models.PostCategoryPaginate{
 		Total:          count,
 		PerPage:        limit,
 		Page:           page,
@@ -45,11 +45,11 @@ func (u *PostCategoryRepository) Paginate(page int, limit int) (*model.PostCateg
 }
 
 // Create post category
-func (u *PostCategoryRepository) Create(input model.PostCategoryInput) (*model.PostCategory, error) {
+func (u *PostCategoryRepository) Create(input models.PostCategoryInput) (*models.PostCategory, error) {
 
-	cID := util.GenerateID()
+	cID := utils.GenerateID()
 
-	c := model.PostCategory{
+	c := models.PostCategory{
 		ID:           cID,
 		CategoryName: input.CategoryName,
 	}
@@ -68,8 +68,8 @@ func (u *PostCategoryRepository) Create(input model.PostCategoryInput) (*model.P
 }
 
 // FindByID post category
-func (u *PostCategoryRepository) FindById(id string) (*model.PostCategory, error) {
-	var c model.PostCategory
+func (u *PostCategoryRepository) FindById(id string) (*models.PostCategory, error) {
+	var c models.PostCategory
 	r := u.db.Where("id = ?", id).First(&c)
 	if r.Error != nil {
 		return nil, r.Error
@@ -78,9 +78,9 @@ func (u *PostCategoryRepository) FindById(id string) (*model.PostCategory, error
 }
 
 // Update post category
-func (u *PostCategoryRepository) Update(id string, input model.PostCategoryInput) (*model.PostCategory, error) {
+func (u *PostCategoryRepository) Update(id string, input models.PostCategoryInput) (*models.PostCategory, error) {
 
-	c := model.PostCategory{
+	c := models.PostCategory{
 		CategoryName: input.CategoryName,
 	}
 	r := u.db.Where("id = ?", id).Updates(&c)
@@ -97,12 +97,12 @@ func (u *PostCategoryRepository) Update(id string, input model.PostCategoryInput
 
 // Delete post category
 func (u *PostCategoryRepository) Delete(id string) (bool, error) {
-	var c model.PostCategory
-	r := u.db.Model(&model.PostCategory{}).Where("id = ?", id).First(&c)
+	var c models.PostCategory
+	r := u.db.Model(&models.PostCategory{}).Where("id = ?", id).First(&c)
 	if r.Error != nil {
 		return false, r.Error
 	}
-	r = u.db.Where("id = ?", id).Delete(&model.PostCategory{})
+	r = u.db.Where("id = ?", id).Delete(&models.PostCategory{})
 	if r.Error != nil {
 		return false, r.Error
 	}

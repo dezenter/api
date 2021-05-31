@@ -6,6 +6,7 @@ import (
 	"github.com/dezenter/api/models"
 	"github.com/dezenter/api/repositories"
 	"github.com/dezenter/api/utils"
+	"github.com/dezenter/api/validators"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -36,8 +37,15 @@ func PostCategoryIndex(c *fiber.Ctx) error {
 // PostCategoryCreate
 func PostCategoryCreate(c *fiber.Ctx) error {
 	params := models.PostCategoryInput{}
-
 	c.BodyParser(&params)
+
+	errors := validators.CreatePostCategory(params)
+	if errors != nil {
+		return c.JSON(fiber.Map{
+			"status":  false,
+			"message": errors,
+		})
+	}
 
 	repo := repositories.NewPostCategoryRepository()
 	r, err := repo.Create(params)
@@ -79,7 +87,6 @@ func PostCategoryUpdate(c *fiber.Ctx) error {
 	id := c.Params("id")
 
 	params := models.PostCategoryInput{}
-
 	c.BodyParser(&params)
 
 	repo := repositories.NewPostCategoryRepository()

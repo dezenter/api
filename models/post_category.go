@@ -15,5 +15,5 @@ type PostCategoryPaginate struct {
 }
 
 type PostCategoryInput struct {
-	CategoryName string `json:"categoryName"`
+	CategoryName string `validate:"required" json:"categoryName"`
 }
