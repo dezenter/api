@@ -1,110 +1,148 @@
 package v1
 
+import (
+	"strconv"
+
+	"github.com/dezenter/api/middlewares"
+	"github.com/dezenter/api/models"
+	"github.com/dezenter/api/repositories"
+	"github.com/dezenter/api/utils"
+	"github.com/dezenter/api/validators"
+	"github.com/gofiber/fiber/v2"
+)
+
 // PostIndex ...
-// func PostIndex(c *fiber.Ctx) error {
-// 	var currentPage = 1
-// 	getCurrentPage := c.Query("page")
-// 	if getCurrentPage != "" {
-// 		currentPage, _ = strconv.Atoi(getCurrentPage)
-// 	}
-// 	limit := 15
-// 	repo := repositories.NewPostRepository()
-// 	r, err := repo.Paginate(currentPage, limit)
+func PostIndex(c *fiber.Ctx) error {
+	var currentPage = 1
+	getCurrentPage := c.Query("page")
+	if getCurrentPage != "" {
+		currentPage, _ = strconv.Atoi(getCurrentPage)
+	}
+	limit := 15
+	repo := repositories.NewPostRepository()
+	r, err := repo.Paginate(currentPage, limit)
 
-// 	if err != nil {
-// 		return c.Status(500).JSON(fiber.Map{
-// 			"status":  false,
-// 			"message": err.Error(),
-// 		})
-// 	}
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"status":  false,
+			"message": err.Error(),
+		})
+	}
 
-// 	return c.JSON(fiber.Map{
-// 		"status": true,
-// 		"data":   r,
-// 	})
-// }
+	return c.JSON(fiber.Map{
+		"status": true,
+		"data":   r,
+	})
+}
 
-// // PostCreate
-// func PostCreate(c *fiber.Ctx) error {
-// 	params := models.PostCreateInput{}
+// PostCreate
+func PostCreate(c *fiber.Ctx) error {
+	a, err := middlewares.UserForContext(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"status":  false,
+			"message": "error",
+		})
+	}
 
-// 	c.BodyParser(&params)
+	params := models.PostCreateInput{}
+	c.BodyParser(&params)
 
-// 	repo := repositories.NewPostRepository()
-// 	r, err := repo.Create("a", params)
+	errors := validators.CreatePostStruct(params)
+	if errors != nil {
+		return c.JSON(fiber.Map{
+			"status":  false,
+			"message": errors,
+		})
+	}
 
-// 	if err != nil {
-// 		return c.Status(500).JSON(fiber.Map{
-// 			"status":  false,
-// 			"message": err.Error(),
-// 		})
-// 	}
+	repo := repositories.NewPostRepository()
+	r, err := repo.Create(a.UserId, params)
 
-// 	return c.JSON(fiber.Map{
-// 		"data": r,
-// 	})
-// }
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"status":  false,
+			"message": err.Error(),
+		})
+	}
 
-// // PostShow
-// func PostShow(c *fiber.Ctx) error {
-// 	id := c.Params("id")
+	return c.JSON(fiber.Map{
+		"data": r,
+	})
+}
 
-// 	repo := repositories.NewPostRepository()
-// 	r, err := repo.FindById(id)
+// PostShow
+func PostShow(c *fiber.Ctx) error {
+	id := c.Params("id")
 
-// 	if err != nil {
-// 		return c.Status(500).JSON(fiber.Map{
-// 			"status":  false,
-// 			"message": err.Error(),
-// 		})
-// 	}
+	repo := repositories.NewPostRepository()
+	r, err := repo.FindById(id)
 
-// 	return c.JSON(fiber.Map{
-// 		"status": true,
-// 		"data":   r,
-// 	})
-// }
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"status":  false,
+			"message": err.Error(),
+		})
+	}
 
-// // PostUpdate
-// func PostUpdate(c *fiber.Ctx) error {
-// 	id := c.Params("id")
+	return c.JSON(fiber.Map{
+		"status": true,
+		"data":   r,
+	})
+}
 
-// 	params := models.PostUpdateInput{}
+// PostUpdate
+func PostUpdate(c *fiber.Ctx) error {
+	a, err := middlewares.UserForContext(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"status":  false,
+			"message": "error",
+		})
+	}
+	id := c.Params("id")
 
-// 	c.BodyParser(&params)
+	params := models.PostUpdateInput{}
+	c.BodyParser(&params)
 
-// 	repo := repositories.NewPostRepository()
-// 	r, err := repo.Update(id, params)
+	repo := repositories.NewPostRepository()
+	r, err := repo.Update(a.UserId, id, params)
 
-// 	if err != nil {
-// 		return c.Status(500).JSON(fiber.Map{
-// 			"status":  false,
-// 			"message": err.Error(),
-// 		})
-// 	}
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"status":  false,
+			"message": err.Error(),
+		})
+	}
 
-// 	return c.JSON(fiber.Map{
-// 		"status": true,
-// 		"data":   r,
-// 	})
-// }
+	return c.JSON(fiber.Map{
+		"status": true,
+		"data":   r,
+	})
+}
 
-// // PostDelete
-// func PostDelete(c *fiber.Ctx) error {
-// 	id := c.Params("id")
+// PostDelete
+func PostDelete(c *fiber.Ctx) error {
+	a, err := middlewares.UserForContext(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"status":  false,
+			"message": "error",
+		})
+	}
+	id := c.Params("id")
 
-// 	repo := repositories.NewPostRepository()
-// 	_, err := repo.Delete(id)
+	repo := repositories.NewPostRepository()
+	_, err = repo.Delete(&a.UserId, id)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"status":  false,
+			"message": err.Error(),
+		})
+	}
 
-// 	if err != nil {
-// 		return c.Status(500).JSON(fiber.Map{
-// 			"status":  false,
-// 			"message": err.Error(),
-// 		})
-// 	}
-
-// 	return c.JSON(fiber.Map{
-// 		"status":  true,
-// 		"message": utils.MsgSuccessDelete,
-// 	})
-// }
+	return c.JSON(fiber.Map{
+		"status":  true,
+		"message": utils.MsgSuccessDelete,
+	})
+}
