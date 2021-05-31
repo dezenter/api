@@ -1,12 +1,14 @@
-package repository
+package repositories
 
 import (
 	"errors"
+	"fmt"
 	"math"
 
-	"github.com/dezenter/api/config"
-	"github.com/dezenter/api/model"
-	"github.com/dezenter/api/util"
+	"github.com/dezenter/api/configs"
+	"github.com/dezenter/api/models"
+	"github.com/dezenter/api/services/jwt"
+	"github.com/dezenter/api/utils"
 	"gorm.io/gorm"
 )
 
@@ -17,12 +19,12 @@ type UserRepository struct {
 
 // NewUserRepository ...
 func NewUserRepository() *UserRepository {
-	return &UserRepository{db: config.DB}
+	return &UserRepository{db: configs.DB}
 }
 
 // Paginate user
-func (u *UserRepository) Paginate(page int, limit int) (*model.UserPaginate, error) {
-	var users []*model.User
+func (u *UserRepository) Paginate(page int, limit int) (*models.UserPaginate, error) {
+	var users []*models.User
 	var count int64
 
 	var skip int
@@ -31,11 +33,11 @@ func (u *UserRepository) Paginate(page int, limit int) (*model.UserPaginate, err
 	} else {
 		skip = limit * (page - 1)
 	}
-	u.db.Model(&model.User{}).Count(&count)
+	u.db.Model(&models.User{}).Count(&count)
 	u.db.Limit(limit).Offset(skip).Order("created_at desc").Find(&users)
 
 	lastPage := int(math.Ceil(float64(count) / float64(limit)))
-	p := model.UserPaginate{
+	p := models.UserPaginate{
 		Total:    count,
 		PerPage:  limit,
 		Page:     page,
@@ -46,27 +48,27 @@ func (u *UserRepository) Paginate(page int, limit int) (*model.UserPaginate, err
 }
 
 // Create user
-func (u *UserRepository) Create(input model.UserCreateInput) (*model.User, error) {
+func (u *UserRepository) Create(input models.UserCreateInput) (*models.User, error) {
 	var c int64
-	r := u.db.Model(&model.User{}).Where("email = ?", input.Email).Count(&c)
+	r := u.db.Model(&models.User{}).Where("email = ?", input.Email).Count(&c)
 	if r.Error != nil {
 		return nil, errors.New("Email has exists")
 	}
-	r = u.db.Model(&model.User{}).Where("username = ?", input.Username).Count(&c)
+	r = u.db.Model(&models.User{}).Where("username = ?", input.Username).Count(&c)
 	if r.Error != nil {
 		return nil, errors.New("Username has exists")
 	}
 
-	uID := util.GenerateID()
+	uID := utils.GenerateID()
 
-	pwd, err := util.HashPassword(input.Password)
+	pwd, err := utils.HashPassword(input.Password)
 	if err != nil {
 		return nil, err
 	}
 
 	isActive := false
 
-	user := model.User{
+	user := models.User{
 		ID:        uID,
 		Username:  input.Username,
 		Password:  pwd,
@@ -90,8 +92,8 @@ func (u *UserRepository) Create(input model.UserCreateInput) (*model.User, error
 }
 
 // FindByID user
-func (u *UserRepository) FindByID(id string) (*model.User, error) {
-	var user model.User
+func (u *UserRepository) FindByID(id string) (*models.User, error) {
+	var user models.User
 	r := u.db.Where("id = ?", id).First(&user)
 	if r.Error != nil {
 		return nil, r.Error
@@ -100,9 +102,9 @@ func (u *UserRepository) FindByID(id string) (*model.User, error) {
 }
 
 // Update user
-func (u *UserRepository) Update(id string, input model.UserUpdateInput) (*model.User, error) {
+func (u *UserRepository) Update(id string, input models.UserUpdateInput) (*models.User, error) {
 
-	user := model.User{
+	user := models.User{
 		ID:        id,
 		Email:     input.Email,
 		FirstName: input.FirstName,
@@ -122,12 +124,12 @@ func (u *UserRepository) Update(id string, input model.UserUpdateInput) (*model.
 
 // Delete user
 func (u *UserRepository) Delete(id string) (bool, error) {
-	var user model.User
-	r := u.db.Model(&model.User{}).Where("id = ?", id).First(&user)
+	var user models.User
+	r := u.db.Model(&models.User{}).Where("id = ?", id).First(&user)
 	if r.Error != nil {
 		return false, r.Error
 	}
-	r = u.db.Where("id = ?", id).Delete(&model.User{})
+	r = u.db.Where("id = ?", id).Delete(&models.User{})
 	if r.Error != nil {
 		return false, r.Error
 	}
@@ -135,11 +137,33 @@ func (u *UserRepository) Delete(id string) (bool, error) {
 }
 
 // FindByEmail ...
-func (u *UserRepository) FindByEmail(email string) (*model.User, error) {
-	var user model.User
+func (u *UserRepository) FindByEmail(email string) (*models.User, error) {
+	var user models.User
 	r := u.db.Where("email = ?", email).First(&user)
 	if r.Error != nil {
 		return nil, r.Error
 	}
 	return &user, nil
+}
+
+// Login user
+func (a *UserRepository) Login(input models.UserLoginInput) (*models.UserToken, error) {
+	var u models.User
+
+	r := a.db.Where("username = ?", input.Username).Where("is_active", true).First(&u)
+	if r.Error != nil {
+		return nil, r.Error
+	}
+
+	c := utils.CheckPasswordHash(input.Password, u.Password)
+	if c == false {
+		return nil, fmt.Errorf("Password not match")
+	}
+
+	ut, err := jwt.CreateUserToken(&u)
+	if err != nil {
+		return nil, err
+	}
+
+	return ut, nil
 }

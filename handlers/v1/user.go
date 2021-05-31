@@ -3,9 +3,10 @@ package v1
 import (
 	"strconv"
 
-	"github.com/dezenter/api/model"
-	"github.com/dezenter/api/repository"
-	"github.com/dezenter/api/util"
+	"github.com/dezenter/api/middlewares"
+	"github.com/dezenter/api/models"
+	"github.com/dezenter/api/repositories"
+	"github.com/dezenter/api/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -17,11 +18,11 @@ func UserIndex(c *fiber.Ctx) error {
 		currentPage, _ = strconv.Atoi(getCurrentPage)
 	}
 	limit := 15
-	repo := repository.NewUserRepository()
+	repo := repositories.NewUserRepository()
 	r, err := repo.Paginate(currentPage, limit)
 
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  false,
 			"message": err.Error(),
 		})
@@ -35,14 +36,14 @@ func UserIndex(c *fiber.Ctx) error {
 
 // UserCreate ...
 func UserCreate(c *fiber.Ctx) error {
-	params := model.UserCreateInput{}
+	params := models.UserCreateInput{}
 
 	c.BodyParser(&params)
-	repo := repository.NewUserRepository()
+	repo := repositories.NewUserRepository()
 	r, err := repo.Create(params)
 
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  false,
 			"message": err.Error(),
 		})
@@ -52,17 +53,16 @@ func UserCreate(c *fiber.Ctx) error {
 		"status": true,
 		"data":   r,
 	})
-
 }
 
 // UserShow ...
 func UserShow(c *fiber.Ctx) error {
 	id := c.Params("id")
-	repo := repository.NewUserRepository()
+	repo := repositories.NewUserRepository()
 	r, err := repo.FindByID(id)
 
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  false,
 			"message": err.Error(),
 		})
@@ -77,13 +77,13 @@ func UserShow(c *fiber.Ctx) error {
 // UserUpdate ...
 func UserUpdate(c *fiber.Ctx) error {
 	id := c.Params("id")
-	params := model.UserUpdateInput{}
+	params := models.UserUpdateInput{}
 	c.BodyParser(&params)
-	repo := repository.NewUserRepository()
+	repo := repositories.NewUserRepository()
 	r, err := repo.Update(id, params)
 
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  false,
 			"message": err.Error(),
 		})
@@ -99,11 +99,11 @@ func UserUpdate(c *fiber.Ctx) error {
 func UserDelete(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	repo := repository.NewUserRepository()
+	repo := repositories.NewUserRepository()
 	_, err := repo.Delete(id)
 
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  false,
 			"message": err.Error(),
 		})
@@ -111,6 +111,32 @@ func UserDelete(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"status":  true,
-		"message": util.MsgSuccessDelete,
+		"message": utils.MsgSuccessDelete,
+	})
+}
+
+// UserMe
+func UserMe(c *fiber.Ctx) error {
+	a, err := middlewares.UserForContext(c)
+	if err != nil {
+		return c.JSON(fiber.Map{
+			"status":  false,
+			"message": "error",
+		})
+	}
+
+	repo := repositories.NewUserRepository()
+	u, err := repo.FindByID(a.UserId)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"status":  false,
+			"message": err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status": true,
+		"data":   u,
 	})
 }
