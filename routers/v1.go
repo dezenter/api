@@ -24,15 +24,15 @@ func Router(app *fiber.App) {
 
 	// V1 Post Category
 	v1.Get("/posts/categories", c.PostCategoryIndex)
-	v1.Post("/posts/categories", c.PostCategoryCreate)
+	v1.Post("/posts/categories", middlewares.Auth(), c.PostCategoryCreate)
 	v1.Get("/posts/categories/:id", c.PostCategoryShow)
-	v1.Patch("/posts/categories/:id", c.PostCategoryUpdate)
-	v1.Delete("/posts/categories/:id", c.PostCategoryDelete)
+	v1.Patch("/posts/categories/:id", middlewares.Auth(), c.PostCategoryUpdate)
+	v1.Delete("/posts/categories/:id", middlewares.Auth(), c.PostCategoryDelete)
 
 	// V1 Post
-	// v1.Get("/posts", c.PostIndex)
-	// v1.Post("/posts", c.PostCreate)
-	// v1.Get("/posts/:id", c.PostShow)
-	// v1.Patch("/posts/:id", c.PostUpdate)
-	// v1.Delete("/posts/:id", c.PostDelete)
+	v1.Get("/posts", c.PostIndex)
+	v1.Post("/posts", middlewares.Auth(), c.PostCreate)
+	v1.Get("/posts/:id", c.PostShow)
+	v1.Patch("/posts/:id", middlewares.Auth(), c.PostUpdate)
+	v1.Delete("/posts/:id", middlewares.Auth(), c.PostDelete)
 }

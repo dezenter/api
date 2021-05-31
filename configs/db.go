@@ -29,6 +29,7 @@ func InitDB() {
 	if envApp == "dev" {
 		db.AutoMigrate(&models.User{})
 		db.AutoMigrate(&models.PostCategory{})
+		db.AutoMigrate(&models.Post{})
 		// db.AutoMigrate(&models.Auth{})
 		// db.AutoMigrate(&models.ResetPassword{})
 		// db.AutoMigrate(&models.Event{})
