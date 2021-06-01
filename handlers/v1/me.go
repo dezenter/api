@@ -45,6 +45,7 @@ func MeUpdate(c *fiber.Ctx) error {
 
 	params := models.UserUpdateMeInput{}
 	c.BodyParser(&params)
+
 	errors := validators.UpdateMe(params)
 	if errors != nil {
 		return c.JSON(fiber.Map{

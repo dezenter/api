@@ -6,6 +6,7 @@ import (
 	"github.com/dezenter/api/models"
 	"github.com/dezenter/api/repositories"
 	"github.com/dezenter/api/utils"
+	"github.com/dezenter/api/validators"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -37,6 +38,14 @@ func UserIndex(c *fiber.Ctx) error {
 func UserCreate(c *fiber.Ctx) error {
 	params := models.UserCreateInput{}
 	c.BodyParser(&params)
+
+	errors := validators.CreateUser(params)
+	if errors != nil {
+		return c.JSON(fiber.Map{
+			"status":  false,
+			"message": errors,
+		})
+	}
 
 	repo := repositories.NewUserRepository()
 	r, err := repo.Create(params)
@@ -78,6 +87,7 @@ func UserUpdate(c *fiber.Ctx) error {
 	id := c.Params("id")
 	params := models.UserUpdateInput{}
 	c.BodyParser(&params)
+
 	repo := repositories.NewUserRepository()
 	r, err := repo.Update(id, params)
 

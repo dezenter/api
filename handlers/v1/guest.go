@@ -3,12 +3,21 @@ package v1
 import (
 	"github.com/dezenter/api/models"
 	"github.com/dezenter/api/repositories"
+	"github.com/dezenter/api/validators"
 	"github.com/gofiber/fiber/v2"
 )
 
 func Register(c *fiber.Ctx) error {
 	params := models.UserRegisterInput{}
 	c.BodyParser(&params)
+
+	errors := validators.Register(params)
+	if errors != nil {
+		return c.JSON(fiber.Map{
+			"status":  false,
+			"message": errors,
+		})
+	}
 
 	isActive := false
 

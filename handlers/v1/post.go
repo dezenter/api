@@ -19,6 +19,7 @@ func PostIndex(c *fiber.Ctx) error {
 		currentPage, _ = strconv.Atoi(getCurrentPage)
 	}
 	limit := 15
+
 	repo := repositories.NewPostRepository()
 	r, err := repo.Paginate(currentPage, limit)
 
