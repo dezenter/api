@@ -66,16 +66,14 @@ func (u *UserRepository) Create(input models.UserCreateInput) (*models.User, err
 		return nil, err
 	}
 
-	isActive := false
-
 	user := models.User{
 		ID:        uID,
 		Username:  input.Username,
 		Password:  pwd,
-		Email:     &input.Email,
-		FirstName: &input.FirstName,
-		LastName:  &input.LastName,
-		IsActive:  &isActive,
+		Email:     input.Email,
+		FirstName: input.FirstName,
+		LastName:  input.LastName,
+		IsActive:  input.IsActive,
 	}
 
 	r = u.db.Create(&user)
@@ -109,6 +107,7 @@ func (u *UserRepository) Update(id string, input models.UserUpdateInput) (*model
 		Email:     input.Email,
 		FirstName: input.FirstName,
 		LastName:  input.LastName,
+		IsActive:  input.IsActive,
 	}
 	r := u.db.Updates(&user)
 	if r.Error != nil {

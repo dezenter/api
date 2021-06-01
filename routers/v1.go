@@ -9,6 +9,8 @@ import (
 func Router(app *fiber.App) {
 
 	v1 := app.Group("/v1")
+	// V1 Guest
+	v1.Get("/register", c.Register)
 
 	// V1 Users
 	v1.Get("/users", c.UserIndex)
@@ -17,7 +19,9 @@ func Router(app *fiber.App) {
 	v1.Patch("/users/:id", c.UserUpdate)
 	v1.Delete("/users/:id", c.UserDelete)
 
-	v1.Get("/me", middlewares.Auth(), c.UserMe)
+	v1.Get("/me", middlewares.Auth(), c.Me)
+	v1.Patch("/me", middlewares.Auth(), c.MeUpdate)
+	v1.Delete("/me", middlewares.Auth(), c.MeDelete)
 
 	// V1 Auth
 	v1.Post("/auth", c.AuthLogin)
