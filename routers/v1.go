@@ -10,7 +10,7 @@ func Router(app *fiber.App) {
 
 	v1 := app.Group("/v1")
 	// V1 Guest
-	v1.Get("/register", c.Register)
+	v1.Post("/register", c.Register)
 
 	// V1 Users
 	v1.Get("/users", c.UserIndex)

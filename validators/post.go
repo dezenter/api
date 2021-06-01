@@ -6,10 +6,10 @@ import (
 	"github.com/go-playground/validator"
 )
 
-func CreatePost(post models.PostCreateInput) []*utils.ErrorResponse {
+func CreatePost(input models.PostCreateInput) []*utils.ErrorResponse {
 	var errors []*utils.ErrorResponse
 	validate := validator.New()
-	err := validate.Struct(post)
+	err := validate.Struct(input)
 	if err != nil {
 		for _, err := range err.(validator.ValidationErrors) {
 			var element utils.ErrorResponse
