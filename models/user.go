@@ -11,9 +11,9 @@ type User struct {
 	ID        string         `gorm:"primaryKey" json:"id"`
 	Username  string         `gorm:"unique;not null" json:"username"`
 	Password  string         `gorm:"unique;not null" json:"-"`
-	Email     *string        `gorm:"unique;not null" json:"email"`
-	FirstName *string        `gorm:"not null" json:"firstName"`
-	LastName  *string        `gorm:"not null" json:"lastName"`
+	Email     string         `gorm:"unique;not null" json:"email"`
+	FirstName string         `gorm:"not null" json:"firstName"`
+	LastName  string         `gorm:"not null" json:"lastName"`
 	IsActive  *bool          `gorm:"not null" json:"isActive"`
 	LastLogin time.Time      `json:"lastLogin"`
 	CreatedAt time.Time      `json:"createdAt"`
@@ -33,41 +33,42 @@ type UserPaginate struct {
 
 // UserCreateInput create user
 type UserCreateInput struct {
-	Username  string `json:"username"`
-	Password  string `json:"password"`
-	Email     string `json:"email"`
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
+	Username  string `validate:"required" json:"username"`
+	Password  string `validate:"required" json:"password"`
+	Email     string `validate:"required" json:"email"`
+	FirstName string `validate:"required" json:"firstName"`
+	LastName  string `validate:"required" json:"lastName"`
+	IsActive  *bool  `json:"isActive"`
 }
 
 // UserUpdateInput update input
 type UserUpdateInput struct {
-	Email     *string `json:"email"`
-	FirstName *string `json:"firstName"`
-	LastName  *string `json:"lastName"`
-	IsActive  *bool   `json:"isActive"`
+	Email     string `json:"email"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	IsActive  *bool  `json:"isActive"`
 }
 
 // UserRegisterInput register user
 type UserRegisterInput struct {
-	Username  string `json:"username"`
-	Password  string `json:"password"`
+	Username  string `validate:"required" json:"username"`
+	Password  string `validate:"required" json:"password"`
+	Email     string `validate:"required" json:"email"`
+	FirstName string `validate:"required" json:"firstName"`
+	LastName  string `validate:"required" json:"lastName"`
+}
+
+// UserUpdateMeInput update input
+type UserUpdateMeInput struct {
 	Email     string `json:"email"`
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 }
 
-// UserUpdateMeInput update input
-type UserUpdateMeInput struct {
-	Email     *string `json:"email"`
-	FirstName *string `json:"firstName"`
-	LastName  *string `json:"lastName"`
-}
-
 // UserLoginInput ...
 type UserLoginInput struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username string `validate:"required" json:"username"`
+	Password string `validate:"required" json:"password"`
 }
 
 // UserToken jwt token

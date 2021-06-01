@@ -6,13 +6,23 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// AuthLogin
-func AuthLogin(c *fiber.Ctx) error {
-	params := models.UserLoginInput{}
+func Register(c *fiber.Ctx) error {
+	params := models.UserRegisterInput{}
 	c.BodyParser(&params)
 
+	isActive := false
+
+	convert := models.UserCreateInput{
+		Username:  params.Username,
+		Password:  params.Password,
+		Email:     params.Email,
+		FirstName: params.FirstName,
+		LastName:  params.LastName,
+		IsActive:  &isActive,
+	}
+
 	repo := repositories.NewUserRepository()
-	r, err := repo.Login(params)
+	r, err := repo.Create(convert)
 
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -25,16 +35,4 @@ func AuthLogin(c *fiber.Ctx) error {
 		"status": true,
 		"data":   r,
 	})
-}
-
-func ForgetPassword(c *fiber.Ctx) error {
-	return nil
-}
-
-func ResetPassword(c *fiber.Ctx) error {
-	return nil
-}
-
-func UserActivate(c *fiber.Ctx) error {
-	return nil
 }
