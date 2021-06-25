@@ -9,12 +9,12 @@ import (
 	"gorm.io/gorm"
 )
 
-// PostCategoryRepository ...
+// PostCategoryRepository
 type PostCategoryRepository struct {
 	db *gorm.DB
 }
 
-// NewUserRepository ...
+// NewUserRepository
 func NewPostCategoryRepository() *PostCategoryRepository {
 	return &PostCategoryRepository{db: configs.DB}
 }

@@ -10,12 +10,12 @@ import (
 	"gorm.io/gorm"
 )
 
-// PostRepository ...
+// PostRepository
 type PostRepository struct {
 	db *gorm.DB
 }
 
-// NewPostRepository ...
+// NewPostRepository
 func NewPostRepository() *PostRepository {
 	return &PostRepository{db: configs.DB}
 }
@@ -74,7 +74,7 @@ func (r *PostRepository) Paginate(page int, limit int) (*models.PostPaginate, er
 		PerPage:  limit,
 		Page:     page,
 		LastPage: lastPage,
-		Data:     showData,
+		Posts:    showData,
 	}
 	return &p, nil
 }

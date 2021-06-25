@@ -11,6 +11,8 @@ func Router(app *fiber.App) {
 	v1 := app.Group("/v1")
 	// V1 Guest
 	v1.Post("/register", c.Register)
+	v1.Post("/forget-password", c.ForgetPassword)
+	v1.Post("/reset-password", c.ResetPassword)
 
 	// V1 Users
 	v1.Get("/users", c.UserIndex)
@@ -39,4 +41,11 @@ func Router(app *fiber.App) {
 	v1.Get("/posts/:id", c.PostShow)
 	v1.Patch("/posts/:id", middlewares.Auth(), c.PostUpdate)
 	v1.Delete("/posts/:id", middlewares.Auth(), c.PostDelete)
+
+	// V1 Admin
+	v1.Get("/admins", c.AdminIndex)
+	v1.Post("/admins", c.AdminCreate)
+	v1.Get("/admins/:id", c.AdminShow)
+	v1.Patch("/admins/:id", c.AdminUpdate)
+	v1.Delete("/admins/:id", c.AdminDelete)
 }

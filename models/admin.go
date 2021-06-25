@@ -1,13 +1,14 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"gorm.io/gorm"
 )
 
-// User model
-type User struct {
+// Admin model
+type Admin struct {
 	ID        string         `gorm:"primaryKey" json:"id"`
 	Username  string         `gorm:"unique;not null" json:"username"`
 	Password  string         `gorm:"unique;not null" json:"-"`
@@ -15,70 +16,73 @@ type User struct {
 	FirstName string         `gorm:"not null" json:"firstName"`
 	LastName  string         `gorm:"not null" json:"lastName"`
 	IsActive  *bool          `gorm:"not null" json:"isActive"`
-	LastLogin time.Time      `json:"lastLogin"`
+	Role      Role           `gorm:"not null" json:"role"`
+	LastLogin *time.Time     `json:"lastLogin"`
 	CreatedAt time.Time      `json:"createdAt"`
 	UpdatedAt time.Time      `json:"updatedAt"`
 	DeletedAt gorm.DeletedAt `gorm:"index"`
-	Posts     []*Post        `gorm:"foreignKey:created_by" json:"posts"`
 }
 
-// UserPaginate pagination
-type UserPaginate struct {
-	Total    int64   `json:"total"`
-	PerPage  int     `json:"perPage"`
-	Page     int     `json:"page"`
-	LastPage int     `json:"lastPage"`
-	Users    []*User `json:"users"`
+type Role string
+
+const (
+	SUPER_ADMIN Role = "SUPER_ADMIN"
+	ADMIN            = "ADMIN"
+	EDITOR           = "EDITOR"
+	SUPPORT          = "SUPPORT"
+)
+
+func (lt Role) IsValid() error {
+	switch lt {
+	case SUPER_ADMIN, ADMIN, EDITOR, SUPPORT:
+		return nil
+	}
+	return errors.New("Invalid role type")
 }
 
-// UserCreateInput create user
-type UserCreateInput struct {
+// AdminPaginate
+type AdminPaginate struct {
+	Total    int64    `json:"total"`
+	PerPage  int      `json:"perPage"`
+	Page     int      `json:"page"`
+	LastPage int      `json:"lastPage"`
+	Admins   []*Admin `json:"admins"`
+}
+
+// AdminCreateInput
+type AdminCreateInput struct {
 	Username  string `validate:"required" json:"username"`
 	Password  string `validate:"required" json:"password"`
 	Email     string `validate:"required" json:"email"`
 	FirstName string `validate:"required" json:"firstName"`
 	LastName  string `validate:"required" json:"lastName"`
-	IsActive  *bool  `json:"isActive"`
+	Role      Role   `validate:"required" json:"role"`
+	IsActive  *bool  `validate:"required" json:"isActive"`
 }
 
-// UserUpdateInput update input
-type UserUpdateInput struct {
+// AdminUpdateInput
+type AdminUpdateInput struct {
 	Email     string `json:"email"`
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
+	Role      Role   `json:"role"`
 	IsActive  *bool  `json:"isActive"`
 }
 
-// UserRegisterInput register user
-type UserRegisterInput struct {
-	Username  string `validate:"required" json:"username"`
-	Password  string `validate:"required" json:"password"`
-	Email     string `validate:"required" json:"email"`
-	FirstName string `validate:"required" json:"firstName"`
-	LastName  string `validate:"required" json:"lastName"`
-}
-
-// UserUpdateMeInput update input
-type UserUpdateMeInput struct {
-	Email     string `json:"email"`
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-}
-
-// UserLoginInput
-type UserLoginInput struct {
+// AdminLoginInput
+type AdminLoginInput struct {
 	Username string `validate:"required" json:"username"`
 	Password string `validate:"required" json:"password"`
 }
 
-// UserToken jwt token
-type UserToken struct {
+// AdminToken jwt token
+type AdminToken struct {
 	Token string `json:"token"`
-	User  User   `json:"user"`
+	Admin Admin  `json:"admin"`
 }
 
-type UserAuth struct {
-	UserId    string `json:"userId"`
+type AdminAuth struct {
+	AdminID   string `json:"adminId"`
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 	Role      string `json:"role"`
