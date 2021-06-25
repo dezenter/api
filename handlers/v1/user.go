@@ -10,7 +10,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// UserIndex ...
+// UserIndex
 func UserIndex(c *fiber.Ctx) error {
 	var currentPage = 1
 	getCurrentPage := c.Query("page")
@@ -34,7 +34,7 @@ func UserIndex(c *fiber.Ctx) error {
 	})
 }
 
-// UserCreate ...
+// UserCreate
 func UserCreate(c *fiber.Ctx) error {
 	params := models.UserCreateInput{}
 	c.BodyParser(&params)
@@ -63,7 +63,7 @@ func UserCreate(c *fiber.Ctx) error {
 	})
 }
 
-// UserShow ...
+// UserShow
 func UserShow(c *fiber.Ctx) error {
 	id := c.Params("id")
 	repo := repositories.NewUserRepository()
@@ -82,7 +82,7 @@ func UserShow(c *fiber.Ctx) error {
 	})
 }
 
-// UserUpdate ...
+// UserUpdate
 func UserUpdate(c *fiber.Ctx) error {
 	id := c.Params("id")
 	params := models.UserUpdateInput{}
@@ -104,7 +104,7 @@ func UserUpdate(c *fiber.Ctx) error {
 	})
 }
 
-// UserDelete ...
+// UserDelete
 func UserDelete(c *fiber.Ctx) error {
 	id := c.Params("id")
 

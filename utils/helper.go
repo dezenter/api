@@ -8,7 +8,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// GenerateID ...
+// GenerateID
 func GenerateID(params ...int) string {
 	var size = 20
 	if len(params) == 1 {
@@ -21,19 +21,19 @@ func GenerateID(params ...int) string {
 	return id
 }
 
-// HashPassword ...
+// HashPassword
 func HashPassword(password string) (string, error) {
 	h, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	return string(h), err
 }
 
-// CheckPasswordHash ...
+// CheckPasswordHash
 func CheckPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }
 
-// ValidateEmail ...
+// ValidateEmail
 func ValidateEmail(email string) bool {
 	var r = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 

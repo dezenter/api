@@ -11,7 +11,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// PostIndex ...
+// PostIndex
 func PostIndex(c *fiber.Ctx) error {
 	var currentPage = 1
 	getCurrentPage := c.Query("page")

@@ -24,13 +24,13 @@ type Post struct {
 	DeletedAt   gorm.DeletedAt `gorm:"index"`
 }
 
-// PostPaginate ...
+// PostPaginate
 type PostPaginate struct {
 	Total    int64       `json:"total"`
 	PerPage  int         `json:"perPage"`
 	Page     int         `json:"page"`
 	LastPage int         `json:"lastPage"`
-	Data     []*PostShow `json:"data"`
+	Posts    []*PostShow `json:"posts"`
 }
 
 // PostShow

@@ -12,12 +12,12 @@ import (
 	"gorm.io/gorm"
 )
 
-// UserRepository ...
+// UserRepository
 type UserRepository struct {
 	db *gorm.DB
 }
 
-// NewUserRepository ...
+// NewUserRepository
 func NewUserRepository() *UserRepository {
 	return &UserRepository{db: configs.DB}
 }
@@ -135,7 +135,7 @@ func (u *UserRepository) Delete(id string) (bool, error) {
 	return true, nil
 }
 
-// FindByEmail ...
+// FindByEmail
 func (u *UserRepository) FindByEmail(email string) (*models.User, error) {
 	var user models.User
 	r := u.db.Where("email = ?", email).First(&user)

@@ -7,11 +7,11 @@ type PostCategory struct {
 
 // PostCategoryPaginate pagination
 type PostCategoryPaginate struct {
-	Total          int64 `json:"total"`
-	PerPage        int   `json:"perPage"`
-	Page           int   `json:"page"`
-	LastPage       int   `json:"lastPage"`
-	PostCategories []*PostCategory
+	Total          int64           `json:"total"`
+	PerPage        int             `json:"perPage"`
+	Page           int             `json:"page"`
+	LastPage       int             `json:"lastPage"`
+	PostCategories []*PostCategory `json:"postCategories"`
 }
 
 type PostCategoryInput struct {

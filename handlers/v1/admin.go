@@ -10,15 +10,15 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// PostCategoryIndex
-func PostCategoryIndex(c *fiber.Ctx) error {
+// AdminIndex
+func AdminIndex(c *fiber.Ctx) error {
 	var currentPage = 1
 	getCurrentPage := c.Query("page")
 	if getCurrentPage != "" {
 		currentPage, _ = strconv.Atoi(getCurrentPage)
 	}
 	limit := 15
-	repo := repositories.NewPostCategoryRepository()
+	repo := repositories.NewAdminRepository()
 	r, err := repo.Paginate(currentPage, limit)
 
 	if err != nil {
@@ -34,12 +34,12 @@ func PostCategoryIndex(c *fiber.Ctx) error {
 	})
 }
 
-// PostCategoryCreate
-func PostCategoryCreate(c *fiber.Ctx) error {
-	params := models.PostCategoryInput{}
+// AdminCreate
+func AdminCreate(c *fiber.Ctx) error {
+	params := models.AdminCreateInput{}
 	c.BodyParser(&params)
 
-	errors := validators.CreatePostCategory(params)
+	errors := validators.CreateAdmin(params)
 	if errors != nil {
 		return c.JSON(fiber.Map{
 			"status":  false,
@@ -47,27 +47,8 @@ func PostCategoryCreate(c *fiber.Ctx) error {
 		})
 	}
 
-	repo := repositories.NewPostCategoryRepository()
+	repo := repositories.NewAdminRepository()
 	r, err := repo.Create(params)
-
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"status":  false,
-			"message": err.Error(),
-		})
-	}
-
-	return c.JSON(fiber.Map{
-		"data": r,
-	})
-}
-
-// PostCategoryShow
-func PostCategoryShow(c *fiber.Ctx) error {
-	id := c.Params("id")
-
-	repo := repositories.NewPostCategoryRepository()
-	r, err := repo.FindById(id)
 
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -82,14 +63,32 @@ func PostCategoryShow(c *fiber.Ctx) error {
 	})
 }
 
-// PostCategoryUpdate
-func PostCategoryUpdate(c *fiber.Ctx) error {
+// AdminShow
+func AdminShow(c *fiber.Ctx) error {
 	id := c.Params("id")
+	repo := repositories.NewAdminRepository()
+	r, err := repo.FindByID(id)
 
-	params := models.PostCategoryInput{}
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"status":  false,
+			"message": err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status": true,
+		"data":   r,
+	})
+}
+
+// AdminUpdate
+func AdminUpdate(c *fiber.Ctx) error {
+	id := c.Params("id")
+	params := models.AdminUpdateInput{}
 	c.BodyParser(&params)
 
-	repo := repositories.NewPostCategoryRepository()
+	repo := repositories.NewAdminRepository()
 	r, err := repo.Update(id, params)
 
 	if err != nil {
@@ -105,11 +104,11 @@ func PostCategoryUpdate(c *fiber.Ctx) error {
 	})
 }
 
-// PostCategoryDelete
-func PostCategoryDelete(c *fiber.Ctx) error {
+// AdminDelete
+func AdminDelete(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	repo := repositories.NewPostCategoryRepository()
+	repo := repositories.NewAdminRepository()
 	_, err := repo.Delete(id)
 
 	if err != nil {
